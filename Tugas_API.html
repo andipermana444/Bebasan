@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Tugas API</title>
+</head>
+<body style="background-image: url('https://getwallpapers.com/wallpaper/full/7/7/c/11411.jpg');">
+    <div class="container" style="color:aliceblue ">
+        <h1>Daftar Pesantren</h1>
+        <p>Silahkan pilih provinsi : <select id="province" class="form-select" aria-label="Default select example">
+            <option selected disabled>Pilih provinsi</option>
+        </select></p>
+
+        <p>Silahkan pilih kota / kabupaten : <select id="kab" class="form-select" aria-label="Default select example" disabled>
+            <option selected disabled>Pilih kota / kabupaten</option>
+        </select></p>
+
+        <p>Daftar Pesantren : <select id="listpesantren" class="form-select" aria-label="Default select example" disabled>
+            <option selected disabled>Pilih pesantren</option>
+        </select></p>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            const baseURL = "https://api-pesantren-indonesia.vercel.app/";
+
+            // Mengisi pilihan provinsi
+            $.get(`${baseURL}provinsi.json`, function(data){
+                const provinceSelect = $('#province');
+
+                $.each(data, function(index, provinsi){
+                    provinceSelect.append(`<option value="${provinsi.id}">${provinsi.nama}</option>`);
+                });
+
+                provinceSelect.prop('disabled', false);
+            });
+
+            // Mengisi pilihan kota/kabupaten saat provinsi dipilih
+            $('#province').change(function(){
+                const provinceId = $(this).val();
+                const kabupatenSelect = $('#kab');
+                const pesantrenSelect = $('#listpesantren');
+
+                kabupatenSelect.empty().prop('disabled', true);
+                pesantrenSelect.empty().prop('disabled', true);
+
+                if (provinceId !== '') {
+                    $.get(`${baseURL}kabupaten/${provinceId}.json`, function(data){
+                        $.each(data, function(index, kabupaten){
+                            kabupatenSelect.append(`<option value="${kabupaten.id}">${kabupaten.nama}</option>`);
+                        });
+
+                        kabupatenSelect.prop('disabled', false);
+                    });
+                }
+            });
+
+            // Mengisi pilihan pesantren saat kota/kabupaten dipilih
+            $('#kab').change(function(){
+                const kabupatenId = $(this).val();
+                const pesantrenSelect = $('#listpesantren');
+
+                pesantrenSelect.empty().prop('disabled', true);
+
+                if (kabupatenId !== '') {
+                    $.get(`${baseURL}pesantren/${kabupatenId}.json`, function(data){
+                        $.each(data, function(index, pesantren){
+                            pesantrenSelect.append(`<option value="${pesantren.id}">${index+1}. ${pesantren.nama}</option>`);
+                        });
+
+                        pesantrenSelect.prop('disabled', false);
+                    });
+                }
+            });
+
+            // Menangani perubahan pada pilihan pesantren
+            $('#listpesantren').change(function() {
+                const selectedPesantren = $(this).val();
+                // Lakukan sesuatu dengan pesantren yang dipilih
+            });
+        });
+    </script>
+</body>
+</html>
