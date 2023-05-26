@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Daerah Indonesia</title>
+</head>
+<body style="background-image: url('https://getwallpapers.com/wallpaper/full/0/0/4/574553.jpg');">
+    <div class="container pt-5">
+        <h2>Kamu darimana? Biar saya bantu untuk mencari asalmu.</h2>
+        <p>Provinsi: <select id="provinsi" class="form-select" aria-label="Default select example">
+            <option selected>Pilih provinsi</option>
+        </select></p>
+        <p>Kabupaten / Kota: <select id="kota" class="form-select" aria-label="Default select example">
+            <option selected>Pilih provinsi terlebih dahulu</option>
+        </select></p>
+        <p>Kecamatan: <select id="desa" class="form-select" aria-label="Default select example">
+            <option selected>Pilih kabupaten / kota terlebih dahulu</option>
+        </select></p>
+        <p>Kelurahan: <select id="kel" class="form-select" aria-label="Default select example">
+            <option selected>Pilih kecamatan terlebih dahulu</option>
+        </select></p>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var urlprov = "http://dev.farizdotid.com/api/daerahindonesia/provinsi"
+            $.get(urlprov, function(data, status){
+                for(i=0;i<data.provinsi.length;i++){
+                    var menu = "<option value =" + data.provinsi[i].id + ">" + data.provinsi[i].nama + "</option>"
+                    $('#provinsi').append(menu)
+                }
+            })
+
+            $('#provinsi').change(function(){
+                var idprov = $('#provinsi').val();
+                var kab = "http://dev.farizdotid.com/api/daerahindonesia/kota?id_provinsi=" + idprov
+                $('#kota').empty()
+                $.get(kab, function(data, status){
+                    for(i=0;i<data.kota_kabupaten.length;i++){
+                        var menukota = "<option value =" + data.kota_kabupaten[i].id + ">" + data.kota_kabupaten[i].nama + "</option>"
+                        $('#kota').append(menukota)
+                    }
+                })    
+            })
+
+            $('#kota').change(function(){
+                var idkot = $('#kota').val();
+                var kota = "http://dev.farizdotid.com/api/daerahindonesia/kecamatan?id_kota=" + idkot
+                $('#desa').empty();
+                $.get(kota, function(data, status){
+                    for(i=0; i<data.kecamatan.length;i++){
+                        var kec = "<option value =" + data.kecamatan[i].id + ">" + data.kecamatan[i].nama + "</option>"
+                        $('#desa').append(kec)
+                    }
+                })
+            })
+
+            $('#desa').change(function(){
+                var iddes = $('#desa').val();
+                var desa = "http://dev.farizdotid.com/api/daerahindonesia/kelurahan?id_kecamatan=" + iddes
+                $('#kel').empty();
+                $.get(desa, function(data, status){
+                    for(i=0; i<data.kelurahan.length;i++){
+                        var kel = "<option value =" + data.kelurahan[i].id + ">" + data.kelurahan[i].nama + "</option>"
+                        $('#kel').append(kel)
+                    }
+                })
+            })
+        });
+    </script>
+</body>
+</html>
